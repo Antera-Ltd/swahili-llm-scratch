@@ -1,0 +1,8 @@
+jsonlines==3.1.0
+tqdm==4.67.1
+sentencepiece==0.2.0
+mlx==0.24.1
+mlx-data==0.3.0
+transformers==4.51.3
+datasets==3.4.1
+numpy==2.2.4
