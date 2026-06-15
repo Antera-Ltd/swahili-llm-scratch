@@ -1,0 +1,2 @@
+Swahili_Corpus/Swahili_Corpus_combined.txt filter=lfs diff=lfs merge=lfs -text
+Swahili_Corpus/MITANDAO_Cleaned.txt filter=lfs diff=lfs merge=lfs -text
