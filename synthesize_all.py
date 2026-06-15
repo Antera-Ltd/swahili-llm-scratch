@@ -3,31 +3,32 @@ import random
 from tqdm import tqdm
 
 # --------------------------
-# DEFINING LANGUAGE KNOWLEDGE
+# DEFINING LANGUAGE KNOWLEDGE 
 # --------------------------
-# Vocabulary, phrases, grammar, topics
+# Vocabulary, phrases, grammar, topics 
 SWAHILI_WORDS = {
-    "greetings": ["Habari", "Mambo", "Hujambo", "Salamu", "Shikamoo"],
-    "people": ["mtu", "watu", "rafiki", "mzazi", "mwanafunzi", "mwalimu"],
-    "places": ["Tanzania", "Kenya", "Dar es Salaam", "Dodoma", "Mombasa", "shule", "nyumbani"],
-    "verbs": ["kwenda", "kula", "kusoma", "kufanya", "kuzungumza", "kuandika", "kufikiria"],
-    "connectors": ["na", "kwa", "wa", "ya", "lakini", "kwa sababu", "kama", "pamoja na"]
+    "greetings": ["Habari", "Mambo", "Hujambo", "Salamu", "Shikamoo", "Jambo", "Hamjambo"],
+    "people": ["mtu", "watu", "rafiki", "mzazi", "mwanafunzi", "mwalimu", "daktari", "mfanyabiashara", "kijana", "mzee"],
+    "places": ["Tanzania", "Kenya", "Dar es Salaam", "Dodoma", "Arusha", "Mwanza", "Mombasa", "Nairobi", "shule", "nyumbani", "sokoni", "ofisini", "kijijini"],
+    "verbs": ["kwenda", "kula", "kusoma", "kufanya", "kuzungumza", "kuandika", "kufikiria", "kununua", "kuuza", "kujifunza", "kufanya kazi", "kusaidia"],
+    "connectors": ["na", "kwa", "wa", "ya", "lakini", "kwa sababu", "kama", "pamoja na", "hivyo", "basi", "ila", "wakati"]
 }
 
 ENGLISH_WORDS = {
-    "greetings": ["Hello", "Hi", "Good morning", "Good evening", "How are you"],
-    "people": ["person", "people", "friend", "parent", "student", "teacher"],
-    "places": ["school", "home", "office", "city", "country"],
-    "verbs": ["go", "eat", "read", "do", "talk", "write", "think"],
-    "connectors": ["and", "with", "of", "but", "because", "if", "together with"]
+    "greetings": ["Hello", "Hi", "Good morning", "Good evening", "How are you", "What's up", "Greetings"],
+    "people": ["person", "people", "friend", "parent", "student", "teacher", "doctor", "businessman", "youth", "elder"],
+    "places": ["school", "home", "market", "office", "village", "city", "country", "hospital", "shop"],
+    "verbs": ["go", "eat", "read", "do", "talk", "write", "think", "buy", "sell", "learn", "work", "help"],
+    "connectors": ["and", "with", "of", "but", "because", "if", "together with", "so", "then", "however", "while"]
 }
 
-# TOPICS: covers daily life, education, reasoning, news, tech, culture
+# TOPICS: covers daily life, education, reasoning, news, tech, culture, Tanzania specific
 TOPICS = [
     "Elimu na masomo", "Afya na maisha", "Teknolojia na intaneti", "Uchumi na biashara",
     "Utamaduni wa Kiafrika", "Kutatua matatizo", "Habari za kila siku", "Usafiri na mawasiliano",
     "School life and studies", "Health and lifestyle", "Technology and internet",
-    "Mixed: Jinsi ya kutumia computer kwa usahihi", "Mixed: Habari mpya kutoka Tanzania"
+    "Mixed: Jinsi ya kutumia computer kwa usahihi", "Mixed: Habari mpya kutoka Tanzania",
+    "Kilimo na mazingira", "Siasa na jamii", "Biashara ndogo ndogo"
 ]
 
 # --------------------------
@@ -62,7 +63,7 @@ def generate_kiswaenglish():
     mix_patterns = [
         # Swahili base + English words
         f"{random.choice(SWAHILI_WORDS['greetings'])}! Leo niko {random.choice(SWAHILI_WORDS['places'])} na nimefanya {random.choice(ENGLISH_WORDS['verbs'])} my homework.",
-        f"Unajua {random.choice(SWAHILI_WORDS['rafiki'])} yangu anapenda kutumia {random.choice(ENGLISH_WORDS['places'])} sana?",
+        f"Unajua {random.choice(SWAHILI_WORDS['people'])} yangu anapenda kutumia {random.choice(ENGLISH_WORDS['places'])} sana?",
         # English base + Swahili words
         f"Today I went to {random.choice(SWAHILI_WORDS['places'])} and met my {random.choice(SWAHILI_WORDS['people'])}.",
         f"When you finish work, come tuonane kwa {random.choice(SWAHILI_WORDS['places'])}.",
@@ -84,10 +85,10 @@ def generate_reasoning_text():
 # --------------------------
 # BUILD FULL DATASET
 # --------------------------
-TOTAL_SAMPLES = 200000  # ~30M tokens
+TOTAL_SAMPLES = 200000  #30M tokens
 OUTPUT_FILE = "full_dataset.jsonl"
 
-print("Synthesizing dataset...")
+print(" Synthesizing dataset...")
 with jsonlines.open(OUTPUT_FILE, mode='w') as writer:
     for _ in tqdm(range(TOTAL_SAMPLES)):
         # language mix (60% KiswaEnglish, 20% Swahili, 20% English)
@@ -97,9 +98,9 @@ with jsonlines.open(OUTPUT_FILE, mode='w') as writer:
         )[0]
 
         if lang_choice == "sw":
-            text = " ".join([generate_swahili_sentence() for _ in range(random.randint(3,8))])
+            text = " ".join([generate_swahili_sentence() for _ in range(random.randint(3,6))])
         elif lang_choice == "en":
-            text = " ".join([generate_english_sentence() for _ in range(random.randint(3,8))])
+            text = " ".join([generate_english_sentence() for _ in range(random.randint(3,6))])
         elif lang_choice == "mix":
             text = " ".join([generate_kiswaenglish() for _ in range(random.randint(3,6))])
         else: # reasoning
@@ -107,4 +108,4 @@ with jsonlines.open(OUTPUT_FILE, mode='w') as writer:
 
         writer.write({"text": text})
 
-print(f" Done! Generated {TOTAL_SAMPLES} samples => full_dataset.jsonl")
+print(f" Done! Generated {TOTAL_SAMPLES} samples, full_dataset.jsonl")
