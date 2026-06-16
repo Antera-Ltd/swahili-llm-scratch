@@ -5,22 +5,26 @@
     <a href="#"><img src="https://img.shields.io/badge/License-Research--NonCommercial-red.svg"></a>
 </p>
 
+<p align="center">
+    <a href="https://antera.co.tz"><img src="https://img.shields.io/badge/Website-antera.co.tz-blue.svg"></a>
+    <a href="https://sheddydev.netlify.app"><img src="https://img.shields.io/badge/Blog-sheddydev.netlify.app-purple.svg"></a>
+    <a href="https://sheddysilicon.netlify.app"><img src="https://img.shields.io/badge/Author-sheddysilicon.netlify.app-green.svg"></a>
+    <a href="mailto:mwalyangashadrack@gmail.com"><img src="https://img.shields.io/badge/Email-mwalyangashadrack%40gmail.com-red.svg"></a>
+</p>
+
 ![Banner](https://capsule-render.vercel.app/api?type=venom&height=200&color=0:FA520F,100:000000&text=KiswaEnglish%20LM&textBg=false&desc=Language%20Model%20Built%20From%20Scratch&descAlign=75&fontAlign=50&descAlignY=70&fontColor=ffffff)
 
 <p align="center">
     <strong>Kiswahili-English Language Model Built From Scratch</strong><br>
 </p>
 
-
 <p align="center">
     <img src="training_loss_curve.png" alt="training loss curve" width="800">
 </p>
 
-
 This project presents a complete implementation of a language model built entirely from scratch, designed specifically for the mixed-language communication style used across East Africa commonly referred to as KiswaEnglish. This form of speech naturally blends Kiswahili and English in daily conversation, a pattern rarely supported well by standard global language models.
 
 Unlike most existing solutions, this model was developed without using any pre-trained weights or external datasets. All vocabulary, grammar rules, and training examples were created manually to reflect local language use, culture, and context. The entire system is optimized to run efficiently on standard consumer hardware, making it accessible to students, developers, and researchers without access to specialized infrastructure.
-
 
 ## Key Features
 
@@ -30,7 +34,6 @@ Unlike most existing solutions, this model was developed without using any pre-t
 - Lightweight architecture optimized for laptops and personal devices
 - Capable of conversation, instruction following, explanation, and basic reasoning
 - Fully independent and customizable
-
 
 ## Technical Details
 
@@ -45,17 +48,15 @@ Unlike most existing solutions, this model was developed without using any pre-t
 | **Framework** | MLX for efficient performance on Apple hardware |
 | **Training Progress** | Loss reduced from above 10.0 to 2.5 over 15 epochs |
 
-
 ## Project Structure
 
 All components were developed specifically for this work:
 
-- **Data generation module**  creates structured, clean, and relevant training text
+- **Data generation module** creates structured, clean, and relevant training text
 - **Custom tokenizer** handles Kiswahili morphology and mixed-language patterns correctly
 - **Neural network definition** lightweight design balanced for performance and memory use
-- **Training pipeline**  optimized for stable learning on consumer hardware
-- **Inference engine**  generates responses efficiently in all supported language forms
-
+- **Training pipeline** optimized for stable learning on consumer hardware
+- **Inference engine** generates responses efficiently in all supported language forms
 
 ## Results
 
@@ -66,7 +67,6 @@ The model successfully produces natural, grammatically correct text in all suppo
 - **KiswaEnglish**: Natural code-switching matching how people actually speak
 
 Training was stable and effective, confirming that high-quality language models can be built independently using widely available resources.
-
 
 ## Use Cases
 
@@ -85,5 +85,5 @@ Training was stable and effective, confirming that high-quality language models 
 - Share methodology to support development for other African languages
 
 ## License
-This project is open for research, education, and non-commercial use.
 
+This project is open for research, education, and non-commercial use.
