@@ -33,7 +33,7 @@ class TransformerBlock(nn.Module):
         self.norm2 = nn.RMSNorm(config["hidden_size"], eps=config["rms_norm_eps"])
 
     def __call__(self, x, mask):
-        # Correct call: MultiHeadAttention(q, k, v, mask) all same for self-attention
+        # call: MultiHeadAttention(q, k, v, mask) all same for self-attention
         x = x + self.attn(self.norm1(x), self.norm1(x), self.norm1(x), mask)
         x = x + self.mlp(self.norm2(x))
         return x
