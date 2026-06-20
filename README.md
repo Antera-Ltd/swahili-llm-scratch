@@ -85,3 +85,5 @@ Training was stable and effective, confirming that high-quality language models 
 ## License
 
 This project is open for research, education, and non-commercial use.
+
+![technologies](https://skillicons.dev/icons?i=git,github,vscode,apple&perline=10)
