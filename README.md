@@ -1,13 +1,4 @@
-<p align="center">
-    <a href="#"><img src="https://img.shields.io/badge/status-active-brightgreen.svg"></a>
-    <a href="#"><img src="https://img.shields.io/badge/MLX-Framework-orange.svg"></a>
-</p>
 
-<p align="center">
-    <a href="https://sheddydev.netlify.app"><img src="https://img.shields.io/badge/Blog-sheddydev.netlify.app-purple.svg"></a>
-    <a href="https://sheddysilicon.netlify.app"><img src="https://img.shields.io/badge/Author-sheddysilicon.netlify.app-green.svg"></a>
-    <a href="mailto:mwalyangashadrack@gmail.com"><img src="https://img.shields.io/badge/Email-mwalyangashadrack%40gmail.com-red.svg"></a>
-</p>
 
 <p align="center">
     <img src="/img/shot-2" alt="screenshot" width="800">
@@ -86,3 +77,9 @@ Training was stable and effective, confirming that high-quality language models 
 This project is open for research, education, and non-commercial use.
 
 ![technologies](https://skillicons.dev/icons?i=git,github,vscode,apple&perline=10)
+
+<p align="center">
+    <a href="https://sheddydev.netlify.app"><img src="https://img.shields.io/badge/Blog-sheddydev.netlify.app-purple.svg"></a>
+    <a href="https://sheddysilicon.netlify.app"><img src="https://img.shields.io/badge/Author-sheddysilicon.netlify.app-green.svg"></a>
+    <a href="mailto:mwalyangashadrack@gmail.com"><img src="https://img.shields.io/badge/Email-mwalyangashadrack%40gmail.com-red.svg"></a>
+</p>
