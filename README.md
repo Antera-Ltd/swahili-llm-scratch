@@ -1,7 +1,5 @@
-
-
 <p align="center">
-    <img src="/img/shot-2" alt="screenshot" width="800">
+    <img src="/img/shot-2.png" alt="screenshot" width="800">
 </p>
 
 
