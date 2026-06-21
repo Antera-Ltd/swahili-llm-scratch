@@ -12,7 +12,7 @@
     <a href="mailto:mwalyangashadrack@gmail.com"><img src="https://img.shields.io/badge/Email-mwalyangashadrack%40gmail.com-red.svg"></a>
 </p>
 
-![Banner](https://capsule-render.vercel.app/api?type=venom&height=200&color=0:FA520F,100:000000&text=KiswaEnglish%20LM&textBg=false&desc=Kiswahili%20Language%20Model%20Built%20From%20Scratch&descAlign=75&fontAlign=50&descAlignY=70&fontColor=ffffff)
+![Banner](https://capsule-render.vercel.app/api?type=venom&height=200&color=0:FA520F,100:000000&text=Kiswahili%20LLM&textBg=false&desc=Kiswahili%20Language%20Model%20Built%20From%20Scratch&descAlign=75&fontAlign=50&descAlignY=70&fontColor=ffffff)
 
 
 This project presents a complete implementation of a language model built entirely from scratch, designed specifically for the mixed-language communication style used across East Africa commonly referred to as KiswaEnglish. This form of speech naturally blends Kiswahili and English in daily conversation, a pattern rarely supported well by standard global language models.
