@@ -60,7 +60,7 @@ python train_scratch.py
 Once training completes, use the matching script:
 - **macOS**:
 ```bash
-python generate.py
+python swahili_gpt.py
 ```
 - **Windows / Linux**: Compatible versions will be contributed soon
 ```bash
@@ -134,7 +134,7 @@ swahili-llm-scratch/
 ├── README.md
 ├── build_full_dataset.py
 ├── build_tokenizer.py
-├── generate.py
+├── swahili_gpt.py
 ├── model_config.json
 ├── plot_figure.py
 ├── requirements.txt
@@ -142,7 +142,7 @@ swahili-llm-scratch/
 ├── synthesize_all.py
 ├── train_scratch.py
 ├── train_scratch_torch.py
-├── generate_torch.py
+├── swahili_gpt_torch.py
 ├── training_loss_curve.png
 └── Swahili_Corpus/
     └── *.txt
@@ -153,8 +153,8 @@ swahili-llm-scratch/
 - **`build_tokenizer.py`** → Trains custom tokenizer to handle mixed language patterns correctly
 - **`model_config.json`** → Stores all model and training settings in one place
 - **`train_scratch.py`** → Defines the model architecture and runs the full training loop for macOS
-- **`generate.py`** → Loads the trained model and produces text responses for macOS
-- **`train_scratch_torch.py` , `generate_torch.py`** → PyTorch versions for Windows and Linux, to be contributed by the community
+- **`swahili_gpt_torch.py`** → Loads the trained model and produces text responses for macOS
+- **`train_scratch_torch.py` , `swahili_gpt_torch.py`** → PyTorch versions for Windows and Linux, to be contributed by the community
 
 
 # How to Contribute
