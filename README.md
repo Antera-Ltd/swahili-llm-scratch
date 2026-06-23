@@ -80,7 +80,7 @@ All data is openly available or can be generated locally:
 
 - **Original Swahili Corpus**: Download from **Mendeley Data** → https://data.mendeley.com/research-data/?query=swahili
 - **Synthetic data**: Created automatically within `build_full_dataset.py` using functions from `synthesize_all.py`
-- **Final dataset**: Built using `python build_full_dataset.py` following the 30/70 ratio
+- **Final dataset**: Built using `python build_full_dataset.py` following the 30|70 ratio
 
 *Note: Data folders are excluded from Git to keep the repository lightweight; you can generate or download them yourself whenever needed.*
 
@@ -109,7 +109,7 @@ Third-Party Content Notice: Further permission may be required for any specific 
 | **Training Data** | Mixed set: synthetic + original Swahili corpus (~100–110 million tokens total) |
 | **Data Split** | 30% synthetic, 70% real data |
 | **Supported Systems** | macOS (fully supported), Windows and Linux (coming via community contributions) |
-| **Hardware Used** | MacBook M3 with 8GB unified memory |
+| **Hardware Used** | MacBook Pro M3  |
 | **Framework** | MLX for efficient performance on Apple hardware; PyTorch versions planned for other systems |
 | **Training Progress** | Loss reduced from above 10.0 to ~2.5 over 8 epochs |
 
@@ -118,13 +118,37 @@ Third-Party Content Notice: Further permission may be required for any specific 
 
 All components were developed specifically for this work:
 
-- **`synthesize_all.py`** → Generates structured synthetic text in Swahili, English, and KiswaEnglish, imported automatically
-- **`build_full_dataset.py`** → Combines synthetic data and Swahili Corpus into one balanced dataset following the 30/70 rule
+```
+swahili-llm-scratch/
+├── .gitignore
+├── LICENSE
+├── MDBANNER/
+│   ├── shot-1.png
+│   └── shot-2.png
+├── README.md
+├── build_full_dataset.py
+├── build_tokenizer.py
+├── generate.py
+├── model_config.json
+├── plot_figure.py
+├── requirements.txt
+├── requirements_torch.txt
+├── synthesize_all.py
+├── train_scratch.py
+├── train_scratch_torch.py
+├── generate_torch.py
+├── training_loss_curve.png
+└── Swahili_Corpus/
+    └── *.txt
+```
+
+- **`synthesize_all.py`** → Generates structured synthetic text in Swahili, English, and Kiswaenglish, imported automatically
+- **`build_full_dataset.py`** → Combines synthetic data and Swahili Corpus into one balanced dataset following the 30|70 rule
 - **`build_tokenizer.py`** → Trains custom tokenizer to handle mixed language patterns correctly
 - **`model_config.json`** → Stores all model and training settings in one place
 - **`train_scratch.py`** → Defines the model architecture and runs the full training loop for macOS
 - **`generate.py`** → Loads the trained model and produces text responses for macOS
-- **`train_scratch_torch.py` / `generate_torch.py`** → PyTorch versions for Windows and Linux, to be contributed by the community
+- **`train_scratch_torch.py` , `generate_torch.py`** → PyTorch versions for Windows and Linux, to be contributed by the community
 
 
 # How to Contribute
