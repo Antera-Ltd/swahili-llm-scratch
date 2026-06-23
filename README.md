@@ -1,3 +1,4 @@
+# Swahili LLM | SwahiliGpt from Scratch. 
 
 <p align="center">
     <img src="/MDBANNER/shot-2.png" alt="screenshot" width="800">
