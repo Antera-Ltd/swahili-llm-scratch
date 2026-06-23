@@ -28,7 +28,7 @@ pip install -r requirements.txt
 > Note: For Windows and Linux, use the PyTorch‑compatible requirements when they become available. The equivalent versions using PyTorch (which runs on Windows and Linux) haven’t been added to the repository yet; they will be added later by other researchers or contributors. Other contributors will translate and adapt the existing MLX‑based scripts to PyTorch, which will run on these operating systems.
 
 # 2. Get the Swahili Corpus
-Download the public corpus from Mendeley Data and place all `.txt` files into a folder named `Swahili_Corpus` in your project root:
+Download the public corpus from Mendeley Data and place all `.txt` files into a folder named `Swahili_Corpus` in your project root, delete all other files and use the one file that says Swahili_Corpus_Combined.txt:
 > https://data.mendeley.com/research-data/?query=swahili
 
 # 3. Build the Full Training Dataset
