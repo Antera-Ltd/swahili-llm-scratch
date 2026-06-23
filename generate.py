@@ -1,24 +1,62 @@
+"""
+Text Generation Script
+Author: Shadrackovsky
+"""
+
 import mlx.core as mx
+import sentencepiece as spm
 import json
-from sentencepiece import SentencePieceProcessor
-from train_scratch import SwahiliLLM
+from train_scratch import KiswahiliLLM
 
-# Load
-with open("model_config.json") as f:
-    config = json.load(f)
-tokenizer = SentencePieceProcessor(model_file="swahili_tokenizer.model")
-model = SwahiliLLM(config)
-model.load_weights("swahili_llm_final.npz")
+MODEL_PATH = "swahili_llm_final.npz"
+TOKENIZER_PATH = "swahili_tokenizer.model"
+MAX_NEW_TOKENS = 256
+TEMPERATURE = 0.7
 
-# Generate
-def generate(prompt, max_tokens=200):
-    tokens = mx.array([tokenizer.encode(prompt)])
-    for _ in range(max_tokens):
-        logits = model(tokens)
-        next_token = mx.argmax(logits[:, -1], axis=-1, keepdims=True)
-        tokens = mx.concatenate([tokens, next_token], axis=-1)
-    return tokenizer.decode(tokens[0].tolist())
 
-print(generate("Eleza jinsi ya kusoma vizuri:"))
-print(generate("Explain why education is important in Tanzania:"))
-print(generate("Habari yako? I want to know jinsi ya kuanzisha biashara ndogo:"))
+def load_model():
+    with open("model_config.json", "r", encoding="utf-8") as f:
+        config = json.load(f)
+    model = KiswahiliLLM()
+    model.load_weights(MODEL_PATH)
+    mx.eval(model.parameters())
+    return model
+
+
+def load_tokenizer():
+    sp = spm.SentencePieceProcessor()
+    sp.load(TOKENIZER_PATH)
+    return sp
+
+
+def generate_text(model, tokenizer, prompt):
+    tokens = tokenizer.encode(prompt, out_type=int)
+    input_ids = mx.array(tokens, dtype=mx.int32)[None, :]
+
+    for _ in range(MAX_NEW_TOKENS):
+        logits = model(input_ids)
+        logits = logits[:, -1, :] / TEMPERATURE
+        next_token = mx.random.categorical(logits, num_samples=1)
+        input_ids = mx.concatenate([input_ids, next_token], axis=1)
+
+        if next_token.item() == tokenizer.eos_id():
+            break
+
+    output_ids = input_ids[0].tolist()
+    return tokenizer.decode(output_ids)
+
+
+if __name__ == "__main__":
+    print("Loading model and tokenizer...")
+    model = load_model()
+    tokenizer = load_tokenizer()
+
+    print("Model ready. Type your prompt below (type 'exit' to quit):")
+    while True:
+        prompt = input("> ")
+        if prompt.lower() == "exit":
+            break
+        if not prompt.strip():
+            continue
+        result = generate_text(model, tokenizer, prompt.strip())
+        print(f"\n{result}\n")
