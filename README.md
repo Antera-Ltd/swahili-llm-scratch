@@ -10,6 +10,11 @@ Unlike most existing solutions, this model was developed without relying on preâ
 
 Currently the core training and inference scripts are built for **Silicon macOS using MLX**, with support for **Windows and Linux** planned contributions from the community to extend compatibility are welcome.
 
+# Inspiration & Reference
+This work is inspired by the approach, teaching, endless tutorials and open contributions of **Andrej Karpathy** and **Alec Radford**, whose work has shown what is possible when building language models from first principles. The architecture follows the Transformer design introduced in the foundational paper:
+> **Attention Is All You Need**  
+> https://papers.neurips.cc/paper/7181-attention-is-all-you-need.pdf
+
 
 # How to Run
 
