@@ -1,1 +1,46 @@
+# macOS system files
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+venv/
+env/
+
+# Model & data files
+*.npz
+*.model
+*.vocab
+*.jsonl
+*.txt
+full_dataset.jsonl
+swahili_tokenizer.*
+swahili_llm_final.npz
+model_epoch_*.npz
+
+# Data folders
+Swahili_Corpus/
+Crawled_Data/
+img/
+*.png
+*.jpg
+*.jpeg
+
+# IDE / Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs & temp files
+*.log
+*.tmp
+*.temp*.txt
