@@ -7,7 +7,7 @@ This project presents a complete implementation of a language model built entire
 
 Unlike most existing solutions, this model was developed without relying on pre‑trained model weights. It combines **custom synthetic data** and **publicly available Swahili corpora** to reflect local language use, culture, and context. The entire system is optimized to run efficiently on standard consumer hardware, making it accessible to students, developers, and researchers without access to specialized infrastructure.
 
-Currently the core training and inference scripts are built for **Silicon macOS using MLX**, with support for **Windows and Linux** planned — contributions from the community to extend compatibility are welcome.
+Currently the core training and inference scripts are built for **Silicon macOS using MLX**, with support for **Windows and Linux** planned contributions from the community to extend compatibility are welcome.
 
 
 # How to Run
