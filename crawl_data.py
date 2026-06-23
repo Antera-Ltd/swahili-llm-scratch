@@ -1,3 +1,8 @@
+"""
+Web Crawler for Real Data Collection On Web
+Author: Shadrackovsky
+"""
+
 import os
 import time
 import random
@@ -9,7 +14,7 @@ from tqdm import tqdm
 OUTPUT_FOLDER = "./Crawled_Data"
 MAX_PAGES_PER_SITE = 80
 DELAY_BETWEEN_REQUESTS = (2, 4)
-USER_AGENT = "Mozilla/5.0 (Macintosh; Apple Silicon) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
 
 SWAHILI_SOURCES = [
@@ -25,7 +30,6 @@ SWAHILI_SOURCES = [
     ("AllAfrica_Sw", "https://sw.allafrica.com")
 ]
 
-
 ENGLISH_SOURCES = [
     ("The_Citizen", "https://www.thecitizen.co.tz"),
     ("Daily_News_Tz", "https://dailynews.co.tz"),
@@ -40,6 +44,8 @@ ENGLISH_SOURCES = [
 ]
 
 ALL_SOURCES = SWAHILI_SOURCES + ENGLISH_SOURCES
+
+
 def clean_text(text):
     lines = text.splitlines()
     cleaned = []
@@ -64,6 +70,7 @@ def get_page_links(soup, base_url):
         if base_domain in href:
             links.add(href)
     return list(links)
+
 
 def crawl_site(name, start_url):
     visited = set()
@@ -102,15 +109,15 @@ def crawl_site(name, start_url):
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(full_text)
 
-    print(f"Saved: {out_path} | Size: {len(full_text)/1024/1024:.2f} MB")
+    print(f"Saved: {out_path} , Size: {len(full_text)/1024/1024:.2f} MB")
 
 
 if __name__ == "__main__":
     os.makedirs(OUTPUT_FOLDER, exist_ok=True)
-    print(f"Starting, Saving to:  {OUTPUT_FOLDER}\n")
+    print(f"Starting.. Saving to {OUTPUT_FOLDER}\n")
 
     for site_name, site_url in tqdm(ALL_SOURCES, desc="Processing sites"):
         print(f"\n Crawling: {site_name} ")
         crawl_site(site_name, site_url)
 
-    print("\nDone ! Saved to ./Crawled_Data")
+    print("\nWork's done. All files saved to ./Crawled_Data")
