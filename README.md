@@ -1,13 +1,13 @@
 
-
 <p align="center">
     <img src="/MDBANNER/shot-2.png" alt="screenshot" width="800">
 </p>
 
-This project presents a complete implementation of a language model built entirely from scratch, designed specifically for the mixed‑language communication style used across East Africa commonly referred to as **KiswaEnglish**. This form of speech naturally blends Kiswahili and English in daily conversation, a pattern rarely supported well by standard global language models.
+This project presents a complete implementation of a language model built entirely from scratch, designed specifically for the mixed‑language communication style used across East Africa commonly referred to as **Kiswaenglish**. This form of speech naturally blends Kiswahili and English in daily conversation, a pattern rarely supported well by standard global language models.
 
 Unlike most existing solutions, this model was developed without relying on pre‑trained model weights. It combines **custom synthetic data**, **publicly available Swahili corpora**, and **crawled real‑world content** to reflect local language use, culture, and context. The entire system is optimized to run efficiently on standard consumer hardware, making it accessible to students, developers, and researchers without access to specialized infrastructure.
 
+Currently the core training and inference scripts are built for **Silicon macOS using MLX**, with support for **Windows and Linux** planned  contributions from the community to extend compatibility are welcome.
 
 
 # How to Run
@@ -19,6 +19,7 @@ First, install all required libraries:
 ```bash
 pip install -r requirements.txt
 ```
+> Note: For Windows and Linux, use the PyTorch‑compatible requirements when they become available. The equivalent versions using PyTorch (which runs on Windows and Linux) haven’t been added to the repository yet they will be added later by other researchers or contributors. Other contributors will translate and adapt the existing MLX‑based scripts to PyTorch, which will run on these operating systems.
 
 # 2. Get the Swahili Corpus
 Download the public corpus from Mendeley Data and place all `.txt` files into a folder named `Swahili_Corpus` in your project root:
@@ -29,30 +30,44 @@ Run the crawler to collect clean text from trusted Swahili and English sources �
 ```bash
 python crawl_data.py
 ```
+Works across all operating systems.
 
 # 4. Build the Full Training Dataset
-Combine synthetic data, the original corpus, and crawled content into one balanced dataset following the **30% synthetic / 70% real** rule:
+Synthetic data is generated automatically during this step. Combine all sources into one balanced dataset following the **30% synthetic, 70% real** rule:
 ```bash
 python build_full_dataset.py
 ```
+Works across all operating systems.
 
 # 5. Train the Custom Tokenizer
 Train a SentencePiece tokenizer optimized for your language mix:
 ```bash
 python build_tokenizer.py
 ```
+Works across all operating systems.
 
 # 6. Start Training the Model
-Train the Transformer model from scratch using MLX:
+Train the Transformer model from scratch:
+- **macOS**: Use MLX for best performance
 ```bash
 python train_scratch.py
 ```
+- **Windows / Linux**: Compatible versions will be contributed soon
+```bash
+# Coming soon
+```
 
-### 7. Generate Text / Test the Model
-Once training completes, use this script to generate responses and test outputs:
+# 7. Generate Text / Test the Model
+Once training completes, use the matching script:
+- **macOS**:
 ```bash
 python generate.py
 ```
+- **Windows / Linux**: Compatible versions will be contributed soon
+```bash
+# Coming soon
+```
+
 
 # Key Features
 
@@ -63,8 +78,8 @@ python generate.py
 - Lightweight architecture optimized for laptops and personal devices
 - Capable of conversation, instruction following, explanation, and basic reasoning
 - Fully independent, customizable, and easy to extend
+- Cross‑platform support in progress, with community contributions for Windows and Linux
 
----
 
 # Getting the Data
 
@@ -72,12 +87,26 @@ All data is openly available or can be generated locally:
 
 - **Original Swahili Corpus**: Download from **Mendeley Data** → https://data.mendeley.com/research-data/?query=swahili
 - **Crawled data**: Generated automatically by running `python crawl_data.py`
-- **Synthetic data**: Created directly using the project’s scripts
+- **Synthetic data**: Created automatically within `build_full_dataset.py` using functions from `synthesize_all.py`
 - **Final dataset**: Built using `python build_full_dataset.py` following the 30/70 ratio
 
 *Note: Data folders are excluded from Git to keep the repository lightweight you can generate or download them yourself whenever needed.*
 
-#  Technical Details
+
+# Dataset License and Acknowledgment
+
+The files associated with this dataset are licensed under a Creative Commons Attribution 4.0 International (CC BY 4.0) license.
+
+What does this mean? You are free to share, copy, and modify this dataset for any purpose, provided you adhere to the following terms:
+
+Attribution: You must give appropriate credit, provide a link to the CC BY license, and clearly indicate if any changes were made.
+
+No Endorsement: You may not use the dataset in any way that suggests the rights holder endorses you or your specific use of the data.
+
+Third-Party Content Notice: Further permission may be required for any specific content within this dataset that is explicitly identified as belonging to a third party.
+
+
+# Technical Details
 
 | Attribute | Value |
 |-----------|-------|
@@ -86,23 +115,25 @@ All data is openly available or can be generated locally:
 | **Context Window** | 2048 tokens |
 | **Tokenizer** | Custom‑built using SentencePiece, trained on full dataset (3,500 vocabulary size) |
 | **Training Data** | Mixed set: synthetic + original corpus + crawled content (~100–110 million tokens total) |
-| **Data Split** | 30% synthetic / 70% real data |
+| **Data Split** | 30% synthetic, 70% real data |
+| **Supported Systems** | macOS (fully supported), Windows and Linux (coming via community contributions) |
 | **Hardware Used** | MacBook M3 with 8GB unified memory |
-| **Framework** | MLX for efficient performance on Apple hardware |
-| **Training Progress** | Loss reduced from above 10.0 to ~2.5 over 15+ epochs |
+| **Framework** | MLX for efficient performance on Apple hardware; PyTorch versions planned for other systems |
+| **Training Progress** | Loss reduced from above 10.0 to ~2.5 over 8 epochs |
 
 
-#  Project Structure
+# Project Structure
 
 All components were developed specifically for this work:
 
-- **`synthesize_all.py`** → Generates structured synthetic text in Swahili, English, and KiswaEnglish
+- **`synthesize_all.py`** → Generates structured synthetic text in Swahili, English, and KiswaEnglish, imported automatically
 - **`crawl_data.py`** → Safely collects clean text from 10 Swahili and 10 English public sources, saved to `./Crawled_Data`
 - **`build_full_dataset.py`** → Combines all sources into one balanced dataset following the 30/70 rule
 - **`build_tokenizer.py`** → Trains custom tokenizer to handle mixed language patterns correctly
-- **`train_scratch.py`** → Defines the model architecture and runs the full training loop
-- **`generate.py`** → Loads the trained model and produces text responses
 - **`model_config.json`** → Stores all model and training settings in one place
+- **`train_scratch.py`** → Defines the model architecture and runs the full training loop for macOS
+- **`generate.py`** → Loads the trained model and produces text responses for macOS
+- **`train_scratch_torch.py` / `generate_torch.py`** → PyTorch versions for Windows and Linux, to be contributed by the community
 
 
 # How to Contribute
@@ -110,29 +141,31 @@ All components were developed specifically for this work:
 Contributions are welcome and easy to follow:
 
 - **Code, ideas, documentation, and new data sources** → submit via Pull Requests or open an Issue
-- **Do NOT commit large data files or model weights** — these are too big for version control
+- **Porting to Windows and Linux**: Other contributors are welcome to provide compatible versions using PyTorch to expand support
+- **Do NOT commit large data files or model weights** → these are too big for version control
 - **To run locally**: Install dependencies, download or generate data, and build the dataset using the scripts provided
 - **To share new data**: Upload to a public hosting service and share the link instead of pushing files directly
 
 
-#  Results
+# Results
 
 The model successfully produces natural, grammatically correct text in all supported modes:
 
 - **Pure Kiswahili**: Clear explanations, advice, and conversation
 - **Pure English**: Accurate answers and structured content
-- **KiswaEnglish**: Natural code‑switching matching how people actually speak
+- **Kiswaenglish**: Natural code‑switching matching how people actually speak
 
 Training was stable and effective, confirming that high‑quality language models can be built independently using widely available resources.
 
 
-#  Use Cases
+# Use Cases
 
 - Offline AI assistant for education and daily use
 - Localized customer service tools
 - Educational content generation aligned with regional languages
 - Research platform for language modeling and low‑resource language technology
 - Foundation for further development of African language AI
+
 
 # Future Work
 
@@ -149,7 +182,7 @@ Training was stable and effective, confirming that high‑quality language model
 </p>
 
 
-#  License
+# License
 
 This project is open for research, education, and non‑commercial use.
 
