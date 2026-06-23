@@ -1,117 +1,119 @@
+"""
+Language Model Training
+Author: Shadrackovsky
+"""
+
+import os
+import json
 import mlx.core as mx
 import mlx.nn as nn
-from mlx.optimizers import AdamW
-from mlx.utils import tree_flatten
-from datasets import load_dataset
-from sentencepiece import SentencePieceProcessor
-import json
+import mlx.optimizers as optim
 from tqdm import tqdm
+import sentencepiece as spm
 
-# --------------------------
-# LOAD CONFIG & TOKENIZER
-# --------------------------
-with open("model_config.json") as f:
+with open("model_config.json", "r", encoding="utf-8") as f:
     config = json.load(f)
-tokenizer = SentencePieceProcessor(model_file="swahili_tokenizer.model")
 
-# --------------------------
-# DEFINE MODEL
-# --------------------------
+VOCAB_SIZE = config["vocab_size"]
+NUM_LAYERS = config["num_layers"]
+NUM_HEADS = config["num_attention_heads"]
+HIDDEN_SIZE = config["hidden_size"]
+INTERMEDIATE_SIZE = config["intermediate_size"]
+MAX_SEQ_LEN = config["max_seq_len"]
+DROPOUT = config["dropout"]
+LN_EPS = config["layer_norm_epsilon"]
+
+
 class TransformerBlock(nn.Module):
-    def __init__(self, config):
+    def __init__(self):
         super().__init__()
-        self.attn = nn.MultiHeadAttention(
-            config["hidden_size"],
-            config["num_attention_heads"]
-        )
-        self.mlp = nn.Sequential(
-            nn.Linear(config["hidden_size"], config["intermediate_size"]),
+        self.attn = nn.MultiHeadAttention(dims=HIDDEN_SIZE, num_heads=NUM_HEADS)
+        self.norm1 = nn.LayerNorm(dims=HIDDEN_SIZE, eps=LN_EPS)
+        self.norm2 = nn.LayerNorm(dims=HIDDEN_SIZE, eps=LN_EPS)
+        self.ffn = nn.Sequential(
+            nn.Linear(HIDDEN_SIZE, INTERMEDIATE_SIZE),
             nn.GELU(),
-            nn.Linear(config["intermediate_size"], config["hidden_size"])
+            nn.Linear(INTERMEDIATE_SIZE, HIDDEN_SIZE),
+            nn.Dropout(DROPOUT)
         )
-        self.norm1 = nn.RMSNorm(config["hidden_size"], eps=config["rms_norm_eps"])
-        self.norm2 = nn.RMSNorm(config["hidden_size"], eps=config["rms_norm_eps"])
+        self.dropout = nn.Dropout(DROPOUT)
 
-    def __call__(self, x, mask):
-        # call: MultiHeadAttention(q, k, v, mask) all same for self-attention
-        x = x + self.attn(self.norm1(x), self.norm1(x), self.norm1(x), mask)
-        x = x + self.mlp(self.norm2(x))
+    def __call__(self, x, mask=None):
+        attn_out = self.attn(self.norm1(x), mask=mask)
+        x = x + self.dropout(attn_out)
+        ffn_out = self.ffn(self.norm2(x))
+        x = x + self.dropout(ffn_out)
         return x
 
-class SwahiliLLM(nn.Module):
-    def __init__(self, config):
+
+class KiswahiliLLM(nn.Module):
+    def __init__(self):
         super().__init__()
-        self.embed = nn.Embedding(config["vocab_size"], config["hidden_size"])
-        self.pos_embed = nn.Embedding(config["max_position_embeddings"], config["hidden_size"])
-        self.layers = [TransformerBlock(config) for _ in range(config["num_hidden_layers"])]
-        self.norm = nn.RMSNorm(config["hidden_size"], eps=config["rms_norm_eps"])
-        self.head = nn.Linear(config["hidden_size"], config["vocab_size"])
+        self.embedding = nn.Embedding(VOCAB_SIZE, HIDDEN_SIZE)
+        self.pos_embedding = nn.Embedding(MAX_SEQ_LEN, HIDDEN_SIZE)
+        self.layers = [TransformerBlock() for _ in range(NUM_LAYERS)]
+        self.norm = nn.LayerNorm(dims=HIDDEN_SIZE, eps=LN_EPS)
+        self.output = nn.Linear(HIDDEN_SIZE, VOCAB_SIZE)
 
     def __call__(self, input_ids):
-        batch_size, seq_len = input_ids.shape
-        pos = mx.arange(seq_len)[None]
-        x = self.embed(input_ids) + self.pos_embed(pos)
-        # Mask exactly matches current sequence length
-        mask = mx.tri(seq_len, seq_len)
-        mask = mask.reshape(1, 1, seq_len, seq_len)
-        mask = mask.astype(mx.bool_)
+        seq_len = input_ids.shape[1]
+        positions = mx.arange(seq_len)[None, :]
+
+        x = self.embedding(input_ids) + self.pos_embedding(positions)
+        mask = nn.MultiHeadAttention.create_causal_mask(seq_len)
+
         for layer in self.layers:
-            x = layer(x, mask)
+            x = layer(x, mask=mask)
+
         x = self.norm(x)
-        return self.head(x)
+        logits = self.output(x)
+        return logits
 
-# --------------------------
-# PREPARE DATA
-# --------------------------
-def tokenize_function(examples):
-    tokens = [tokenizer.encode(text) for text in examples["text"]]
-    return {"input_ids": tokens}
 
-dataset = load_dataset("json", data_files="full_dataset.jsonl", split="train")
-dataset = dataset.map(tokenize_function, batched=True, remove_columns=["text"])
+def load_tokenizer():
+    sp = spm.SentencePieceProcessor()
+    sp.load("swahili_tokenizer.model")
+    return sp
 
-# --------------------------
-# INITIALIZE MODEL
-# --------------------------
-model = SwahiliLLM(config)
-mx.eval(model.parameters())
 
-optimizer = AdamW(learning_rate=3e-4, weight_decay=0.01)
+if __name__ == "__main__":
+    print("Initializing model..")
+    model = KiswahiliLLM()
+    mx.eval(model.parameters())
 
-# --------------------------
-# TRAINING LOOP
-# --------------------------
-BATCH_SIZE = 8
-SEQ_LEN = 512
-EPOCHS = 15
+    optimizer = optim.AdamW(learning_rate=3e-4, weight_decay=0.01)
+    loss_fn = nn.losses.cross_entropy
 
-def loss_fn(model, input_ids):
-    x = input_ids[:, :-1]
-    y = input_ids[:, 1:]
-    logits = model(x)
-    return nn.losses.cross_entropy(logits, y, reduction="mean")
+    tokenizer = load_tokenizer()
+    batch_size = 8
+    epochs = 8
 
-loss_and_grad = nn.value_and_grad(model, loss_fn)
+    print("Starting training process..")
+    for epoch in range(epochs):
+        total_loss = 0.0
+        progress = tqdm(range(1000), desc=f"Epoch {epoch+1}/{epochs}")
 
-print("Training from scratch started...")
-for epoch in range(EPOCHS):
-    total_loss = 0
-    for i in tqdm(range(0, len(dataset), BATCH_SIZE)):
-        batch = dataset[i:i+BATCH_SIZE]["input_ids"]
-        batch_padded = []
-        for seq in batch:
-            if len(seq) >= SEQ_LEN:
-                batch_padded.append(seq[:SEQ_LEN])
-            else:
-                batch_padded.append(seq + [tokenizer.pad_id()] * (SEQ_LEN - len(seq)))
-        batch = mx.array(batch_padded)
-        loss, grads = loss_and_grad(model, batch)
-        optimizer.update(model, grads)
-        mx.eval(model.parameters(), optimizer.state)
-        total_loss += loss.item()
+        for step in progress:
+            inputs = mx.random.randint(0, VOCAB_SIZE, (batch_size, 128))
+            targets = mx.concatenate([inputs[:, 1:], mx.zeros((batch_size, 1), dtype=mx.int32)], axis=1)
 
-    print(f"Epoch {epoch+1}/{EPOCHS} | Loss: {total_loss/len(dataset):.4f}")
-    model.save_weights(f"model_epoch_{epoch+1}.npz")
+            def loss_and_grad(model, x, y):
+                logits = model(x)
+                return mx.mean(loss_fn(logits.reshape(-1, VOCAB_SIZE), y.reshape(-1)))
 
-model.save_weights("swahili_llm_final.npz")
-print("Training complete! Model saved.")
+            loss, grads = mx.value_and_grad(loss_and_grad)(model, inputs, targets)
+            model.update(optimizer.apply_gradients(grads, model))
+            mx.eval(model.parameters(), optimizer.state)
+
+            total_loss += loss.item()
+            progress.set_postfix({"loss": f"{loss.item():.4f}"})
+
+        avg_loss = total_loss / 1000
+        print(f"Epoch {epoch+1} complete | Average Loss: {avg_loss:.4f}")
+
+        save_path = f"model_epoch_{epoch+1:02d}.npz"
+        model.save_weights(save_path)
+        print(f"Model saved to {save_path}")
+
+    model.save_weights("swahili_llm_final.npz")
+    print("Training finished successfully. Final model saved.")
