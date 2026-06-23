@@ -1,7 +1,7 @@
 # Swahili LLM | SwahiliGpt from Scratch. 
 
 <p align="center">
-    <img src="/MDBANNER/shot-2.png" alt="screenshot" width="800">
+    <img src="/MDBANNER/swahili_banner.png" alt="screenshot" width="800">
 </p>
 
 This project presents a complete implementation of a language model built entirely from scratch, designed specifically for the mixed‑language communication style used across East Africa commonly referred to as **Kiswaenglish**. This form of speech naturally blends Kiswahili and English in daily conversation, a pattern rarely supported well by standard global language models.
