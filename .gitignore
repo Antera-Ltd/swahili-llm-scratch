@@ -28,10 +28,6 @@ model_epoch_*.npz
 # Data folders
 Swahili_Corpus/
 Crawled_Data/
-img/
-*.png
-*.jpg
-*.jpeg
 
 # IDE / Editor files
 .vscode/
