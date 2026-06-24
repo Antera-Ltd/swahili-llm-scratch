@@ -8,7 +8,7 @@ This project presents a complete implementation of a language model built entire
 
 Unlike most existing solutions, this model was developed without relying on pre‑trained model weights. It combines **custom synthetic data** and **publicly available Swahili corpora** to reflect local language use, culture, and context. The entire system is optimized to run efficiently on standard consumer hardware, making it accessible to students, developers, and researchers without access to specialized infrastructure.
 
-Currently the core training and inference scripts are built for **Silicon macOS using MLX**, with support for **Windows and Linux** planned contributions from the community to extend compatibility are welcome.
+The core training and inference scripts are built with **PyTorch**, so they run on **Linux, Windows, and macOS** (CPU, NVIDIA CUDA GPUs, and Apple Silicon via MPS — selected automatically).
 
 # Inspiration & Reference
 This work is inspired by the approach, teaching, endless tutorials and open contributions of **Andrej Karpathy** and **Alec Radford**, whose work has shown what is possible when building language models from first principles. The architecture follows the Transformer design introduced in the foundational paper:
@@ -25,7 +25,7 @@ First, install all required libraries:
 ```bash
 pip install -r requirements.txt
 ```
-> Note: For Windows and Linux, use the PyTorch‑compatible requirements when they become available. The equivalent versions using PyTorch (which runs on Windows and Linux) haven’t been added to the repository yet; they will be added later by other researchers or contributors. Other contributors will translate and adapt the existing MLX‑based scripts to PyTorch, which will run on these operating systems.
+> Note: The scripts use PyTorch and run on Linux, Windows, and macOS. The right backend (CPU / CUDA / Apple MPS) is chosen automatically at runtime. For GPU acceleration, install the appropriate PyTorch build for your platform from https://pytorch.org/get-started/locally/.
 
 # 2. Get the Swahili Corpus
 Download the public corpus from Mendeley Data and place all `.txt` files into a folder named `Swahili_Corpus` in your project root, delete all other files and use the one file that says Swahili_Corpus_Combined.txt:
@@ -46,25 +46,16 @@ python build_tokenizer.py
 Works across all operating systems.
 
 # 5. Start Training the Model
-Train the Transformer model from scratch:
-- **macOS**: Use MLX for best performance
+Train the Transformer model from scratch (runs on Linux, Windows, and macOS; uses GPU automatically if available):
 ```bash
 python train_scratch.py
 ```
-- **Windows / Linux**: Compatible versions will be contributed soon
-```bash
-# Coming soon
-```
+Checkpoints are saved each epoch as `model_epoch_XX.pt`, and the final model as `swahili_llm_final.pt`.
 
 # 6. Generate Text / Test the Model
-Once training completes, use the matching script:
-- **macOS**:
+Once training completes, launch the interactive chat:
 ```bash
 python swahili_gpt.py
-```
-- **Windows / Linux**: Compatible versions will be contributed soon
-```bash
-# Coming soon
 ```
 
 
@@ -116,7 +107,7 @@ Third-Party Content Notice: Further permission may be required for any specific 
 | **Data Split** | 30% synthetic, 70% real data |
 | **Supported Systems** | macOS (fully supported), Windows and Linux (coming via community contributions) |
 | **Hardware Used** | MacBook Pro M3  |
-| **Framework** | MLX for efficient performance on Apple hardware; PyTorch versions planned for other systems |
+| **Framework** | PyTorch (runs on CPU, NVIDIA CUDA, and Apple Silicon MPS) |
 | **Training Progress** | Loss reduced from above 10.0 to ~2.5 over 8 epochs |
 
 

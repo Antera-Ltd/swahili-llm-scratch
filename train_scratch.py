@@ -1,5 +1,5 @@
 """
-Kiswahili LLM Training
+Kiswahili LLM Training (PyTorch)
 Uses the dataset and tokenizer
 Author: Shadrackovsky
 """
@@ -7,9 +7,10 @@ Author: Shadrackovsky
 import os
 import json
 import random
-import mlx.core as mx
-import mlx.nn as nn
-import mlx.optimizers as optim
+import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
 from tqdm import tqdm
 import sentencepiece as spm
 import jsonlines
@@ -29,31 +30,44 @@ DROPOUT = config["dropout"]
 LN_EPS = config["layer_norm_epsilon"]
 BLOCK_SIZE = 128
 
+DEVICE = torch.device(
+    "cuda" if torch.cuda.is_available()
+    else "mps" if torch.backends.mps.is_available()
+    else "cpu"
+)
 
-def create_causal_mask(seq_len: int) -> mx.array:
-    mask = mx.triu(mx.ones((seq_len, seq_len)), k=1)
-    mask = mask * -1e9
+
+def create_causal_mask(seq_len: int, device) -> torch.Tensor:
+    # Float mask: 0 where allowed, -inf where masked (upper triangle, k=1)
+    mask = torch.full((seq_len, seq_len), float("-inf"), device=device)
+    mask = torch.triu(mask, diagonal=1)
     return mask
 
 
 class TransformerBlock(nn.Module):
     def __init__(self):
         super().__init__()
-        self.attn = nn.MultiHeadAttention(dims=HIDDEN_SIZE, num_heads=NUM_HEADS)
-        self.norm1 = nn.LayerNorm(dims=HIDDEN_SIZE, eps=LN_EPS)
-        self.norm2 = nn.LayerNorm(dims=HIDDEN_SIZE, eps=LN_EPS)
+        self.attn = nn.MultiheadAttention(
+            embed_dim=HIDDEN_SIZE,
+            num_heads=NUM_HEADS,
+            dropout=DROPOUT,
+            batch_first=True,
+        )
+        self.norm1 = nn.LayerNorm(HIDDEN_SIZE, eps=LN_EPS)
+        self.norm2 = nn.LayerNorm(HIDDEN_SIZE, eps=LN_EPS)
         self.ffn = nn.Sequential(
             nn.Linear(HIDDEN_SIZE, INTERMEDIATE_SIZE),
             nn.GELU(),
             nn.Linear(INTERMEDIATE_SIZE, HIDDEN_SIZE),
-            nn.Dropout(DROPOUT)
+            nn.Dropout(DROPOUT),
         )
         self.dropout = nn.Dropout(DROPOUT)
 
-    def __call__(self, x, mask=None):
+    def forward(self, x, mask=None):
         norm_x = self.norm1(x)
-        # MLX MultiHeadAttention call: query, key, value
-        attn_out = self.attn(norm_x, norm_x, norm_x, mask=mask)
+        attn_out, _ = self.attn(
+            norm_x, norm_x, norm_x, attn_mask=mask, need_weights=False
+        )
         x = x + self.dropout(attn_out)
         ffn_out = self.ffn(self.norm2(x))
         x = x + self.dropout(ffn_out)
@@ -65,15 +79,15 @@ class KiswahiliLLM(nn.Module):
         super().__init__()
         self.embedding = nn.Embedding(VOCAB_SIZE, HIDDEN_SIZE)
         self.pos_embedding = nn.Embedding(MAX_SEQ_LEN, HIDDEN_SIZE)
-        self.layers = [TransformerBlock() for _ in range(NUM_LAYERS)]
-        self.norm = nn.LayerNorm(dims=HIDDEN_SIZE, eps=LN_EPS)
+        self.layers = nn.ModuleList([TransformerBlock() for _ in range(NUM_LAYERS)])
+        self.norm = nn.LayerNorm(HIDDEN_SIZE, eps=LN_EPS)
         self.output = nn.Linear(HIDDEN_SIZE, VOCAB_SIZE)
 
-    def __call__(self, input_ids):
+    def forward(self, input_ids):
         seq_len = input_ids.shape[1]
-        positions = mx.arange(seq_len)[None, :]
+        positions = torch.arange(seq_len, device=input_ids.device)[None, :]
         x = self.embedding(input_ids) + self.pos_embedding(positions)
-        mask = create_causal_mask(seq_len)
+        mask = create_causal_mask(seq_len, input_ids.device)
         for layer in self.layers:
             x = layer(x, mask=mask)
         x = self.norm(x)
@@ -115,23 +129,22 @@ def get_batch(texts, tokenizer, batch_size=8, seq_len=128):
             tokens = tokens * ((seq_len + 1) // len(tokens) + 1)
         start = random.randint(0, len(tokens) - seq_len - 1)
         seq = tokens[start : start + seq_len + 1]
-        x = seq[:-1]
-        y = seq[1:]
-        x_batch.append(x)
-        y_batch.append(y)
-    return mx.array(x_batch, dtype=mx.int32), mx.array(y_batch, dtype=mx.int32)
+        x_batch.append(seq[:-1])
+        y_batch.append(seq[1:])
+    x = torch.tensor(x_batch, dtype=torch.long, device=DEVICE)
+    y = torch.tensor(y_batch, dtype=torch.long, device=DEVICE)
+    return x, y
 
 
 if __name__ == "__main__":
     print("Starting training process")
+    print(f"Using device: {DEVICE}")
 
     texts = load_dataset()
     tokenizer = load_tokenizer()
-    model = KiswahiliLLM()
-    mx.eval(model.parameters())
+    model = KiswahiliLLM().to(DEVICE)
 
-    optimizer = optim.AdamW(learning_rate=3e-4, weight_decay=0.01)
-    loss_fn = nn.losses.cross_entropy
+    optimizer = torch.optim.AdamW(model.parameters(), lr=3e-4, weight_decay=0.01)
 
     batch_size = 8
     epochs = 8
@@ -139,6 +152,7 @@ if __name__ == "__main__":
 
     print(f"Settings: batch={batch_size}, sequence length={BLOCK_SIZE}, epochs={epochs}")
 
+    model.train()
     for epoch in range(epochs):
         total_loss = 0.0
         progress = tqdm(range(steps_per_epoch), desc=f"Epoch {epoch+1}/{epochs}")
@@ -146,13 +160,14 @@ if __name__ == "__main__":
         for step in progress:
             inputs, targets = get_batch(texts, tokenizer, batch_size, BLOCK_SIZE)
 
-            def loss_and_grad(model, x, y):
-                logits = model(x)
-                return mx.mean(loss_fn(logits.reshape(-1, VOCAB_SIZE), y.reshape(-1)))
+            logits = model(inputs)
+            loss = F.cross_entropy(
+                logits.reshape(-1, VOCAB_SIZE), targets.reshape(-1)
+            )
 
-            loss, grads = mx.value_and_grad(loss_and_grad)(model, inputs, targets)
-            model.update(optimizer.apply_gradients(grads, model))
-            mx.eval(model.parameters(), optimizer.state)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
             total_loss += loss.item()
             progress.set_postfix({"loss": f"{loss.item():.4f}"})
@@ -160,9 +175,9 @@ if __name__ == "__main__":
         avg_loss = total_loss / steps_per_epoch
         print(f"Epoch {epoch+1} complete, average loss: {avg_loss:.4f}")
 
-        save_path = f"model_epoch_{epoch+1:02d}.npz"
-        model.save_weights(save_path)
+        save_path = f"model_epoch_{epoch+1:02d}.pt"
+        torch.save(model.state_dict(), save_path)
         print(f"Model saved to {save_path}")
 
-    model.save_weights("swahili_llm_final.npz")
-    print("Training complete. Final model saved as swahili_llm_final.npz")
+    torch.save(model.state_dict(), "swahili_llm_final.pt")
+    print("Training complete. Final model saved as swahili_llm_final.pt")
