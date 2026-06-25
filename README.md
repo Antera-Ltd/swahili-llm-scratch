@@ -1,3 +1,17 @@
+---
+title: Swahili LLM Scratch
+emoji: 🏃
+colorFrom: yellow
+colorTo: yellow
+sdk: gradio
+sdk_version: 6.19.0
+python_version: '3.13'
+app_file: app.py
+pinned: false
+license: apache-2.0
+short_description: Swahili Swaiba LLM From Scratch
+---
+
 # Swahili LLM | SwahiliGpt from Scratch. 
 
 <p align="center">
