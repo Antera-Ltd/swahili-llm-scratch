@@ -24,6 +24,9 @@ Unlike most existing solutions, this model was developed without relying on preâ
 
 Currently the core training and inference scripts are built for **Silicon macOS using MLX**, with support for **Windows and Linux** planned contributions from the community to extend compatibility are welcome.
 
+> **Please, Refer to this repo for the WebApp Interface of this project**  
+> https://github.com/zuck30/SWAHIBA
+
 # Inspiration & Reference
 This work is inspired by the approach, teaching, endless tutorials and open contributions of **Andrej Karpathy** and **Alec Radford**, whose work has shown what is possible when building language models from first principles. The architecture follows the Transformer design introduced in the foundational paper:
 > **Attention Is All You Need**  
