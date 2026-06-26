@@ -1,4 +1,4 @@
----
+<!-- ---
 title: Swahili LLM Scratch
 emoji: 🏃
 colorFrom: yellow
@@ -10,9 +10,9 @@ app_file: app.py
 pinned: false
 license: apache-2.0
 short_description: Swahili Swaiba LLM From Scratch
----
+--- -->
 
-# Swahili LLM | SwahiliGpt from Scratch. 
+# Swahili Swahiba LLM | SwahiliGpt from Scratch. 
 
 <p align="center">
     <img src="/MDBANNER/swahili_banner.png" alt="screenshot" width="800">
