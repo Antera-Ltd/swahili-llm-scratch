@@ -1,0 +1,8 @@
+# Generated artifacts (data, tokenizer, checkpoints, logs)
+data/
+__pycache__/
+*.pt
+*.bin
+*.model
+*.vocab
+*.log
