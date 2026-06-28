@@ -55,13 +55,52 @@ python generate.py
 It's a **base/completion** model — give it the *start* of a sentence (e.g.
 `"Leo asubuhi nilikwenda"`), not a question.
 
+## 4. Instruction fine-tuning (optional → a chat model)
+
+Turn the base/completion model into one that **follows instructions** in
+Kiswahili. All three datasets come from **HuggingFace** (nothing local).
+
+**a. Build the instruction set** — pulls open Swahili instruction data, renders
+it to one template, oversamples the small native set, and tokenizes with the
+prompt loss-masked:
+```bash
+python build_instruct.py
+```
+Sources (credit them if you publish): `CohereLabs/aya_dataset` (native, Swahili),
+`MBZUAI/Bactrian-X` (`sw`), `NabajyotiPathak/kiswahili-ai-blended`. Writes
+`data/instruct/{train.pt,val.pt,instruct.jsonl,meta.json}`. Env: `OVERSAMPLE=5`,
+`MAX_LEN=512`, `VAL_FRAC=0.01`.
+
+**b. Fine-tune (SFT, resumable)** — continues from the base checkpoint, learning
+**only the response tokens** (the prompt is masked), with a short low-LR cosine
+schedule. **Gradient checkpointing** keeps full 512-token sequences inside ~4GB
+of VRAM:
+```bash
+python finetune.py
+```
+Writes `data/instruct/instruct_final.pt` (+ a resumable `ckpt_instruct.pt` every
+`CKPT_EVERY` steps). Key env: `EPOCHS=3`, `LR=2e-5`, `BATCH_SIZE=4`,
+`GRAD_ACCUM=8`, `FT_MAX_LEN=512`.
+
+> The base run is untouched — fine-tuning reads the base checkpoint read-only and
+> writes to `data/instruct/`. On a single small GPU, stop base training first
+> (they can't share the VRAM).
+
+**c. Chat** — streams the answer token-by-token, using the same template:
+```bash
+python chat.py
+```
+
 ## Files
 | File | Purpose |
 |------|---------|
 | `model.py` | Model definition (decoder-only Transformer) + load/generate helpers |
 | `build_corpus.py` | HuggingFace dataset → tokenizer → `uint16` token binary (resumable) |
-| `train.py` | Resumable trainer (memmap, nanoGPT schedule) |
-| `generate.py` | Inference: sample prompts + interactive |
+| `train.py` | Resumable base trainer (memmap, nanoGPT schedule) |
+| `generate.py` | Base inference: sample prompts + interactive |
+| `build_instruct.py` | HuggingFace instruction data → tokenized SFT set (prompt-masked) |
+| `finetune.py` | Resumable SFT (masked loss, gradient checkpointing) → chat model |
+| `chat.py` | Instruction inference: streaming, template-wrapped |
 | `model_config.json` | Architecture (vocab 32k, 12 layers, 8 heads, hidden 512) |
 
 ## Architecture
