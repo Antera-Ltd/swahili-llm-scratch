@@ -215,8 +215,22 @@ Training was stable and effective, confirming that high‑quality language model
 - Share methodology to support development for other African languages
 
 <br>
+
+# First Training Loss Curve on MLX 
 <p align="center">
-    <img src="training_loss_curve.png" alt="training loss curve" width="800">
+    <img src="/MDBANNER/training_loss_curve.png" alt="training loss curve" width="800">
+</p>
+
+
+# Ongoing Training and Finetuning
+
+> **To keep up with what's going on Please refer and visit hugging face**
+>https://huggingface.co/Benjamin-png/swahili-gpt-71m-instruct
+
+# Loss trajectory for ongoing finetuning and learning
+
+<p align="center">
+    <img src="/MDBANNER/loss_curve.png" alt="training loss curve" width="800">
 </p>
 
 
