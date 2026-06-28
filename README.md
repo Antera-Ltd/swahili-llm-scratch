@@ -136,7 +136,7 @@ Third-Party Content Notice: Further permission may be required for any specific 
 # Project Structure
 
 All components were developed specifically for this work:
-
+```
 swahili-llm-scratch/
 ├── .gitignore
 ├── LICENSE
@@ -166,6 +166,7 @@ swahili-llm-scratch/
 ├── synthesize_all.py
 └── train_scratch.py
 
+```
 - **`synthesize_all.py`** → Generates structured synthetic text in Swahili, English, and Kiswaenglish, imported automatically
 - **`build_full_dataset.py`** → Combines synthetic data and Swahili Corpus into one balanced dataset following the 30|70 rule
 - **`build_tokenizer.py`** → Trains custom tokenizer to handle mixed language patterns correctly
