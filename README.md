@@ -68,10 +68,8 @@ Train the Transformer model from scratch:
 ```bash
 python train_scratch.py
 ```
-- **Windows / Linux**: Compatible versions will be contributed soon
-```bash
-# Coming soon
-```
+- **Windows / Linux**: Compatible versions look at pytorch dir
+>pytorch/
 
 # 6. Generate Text / Test the Model
 Once training completes, use the matching script:
@@ -79,10 +77,8 @@ Once training completes, use the matching script:
 ```bash
 python swahili_gpt.py
 ```
-- **Windows / Linux**: Compatible versions will be contributed soon
-```bash
-# Coming soon
-```
+- **Windows / Linux**: Compatible versions look at pytorch dir
+>pytorch/
 
 
 # Key Features
@@ -141,37 +137,39 @@ Third-Party Content Notice: Further permission may be required for any specific 
 
 All components were developed specifically for this work:
 
-```
 swahili-llm-scratch/
 ├── .gitignore
 ├── LICENSE
-├── MDBANNER/
-│   ├── shot-1.png
-│   └── shot-2.png
 ├── README.md
+├── MDBANNER/
+│   ├── loss_curve.png
+│   ├── swahili_banner.png
+│   └── training_loss_curve.png
+├── pytorch/
+│   ├── .gitignore
+│   ├── README.md
+│   ├── build_corpus.py
+│   ├── build_instruct.py
+│   ├── chat.py
+│   ├── finetune.py
+│   ├── generate.py
+│   ├── model.py
+│   ├── model_config.json
+│   ├── requirements.txt
+│   └── train.py
 ├── build_full_dataset.py
 ├── build_tokenizer.py
-├── swahili_gpt.py
 ├── model_config.json
 ├── plot_figure.py
 ├── requirements.txt
-├── requirements_torch.txt
+├── swahili_gpt.py
 ├── synthesize_all.py
-├── train_scratch.py
-├── train_scratch_torch.py
-├── swahili_gpt_torch.py
-├── training_loss_curve.png
-└── Swahili_Corpus/
-    └── *.txt
-```
+└── train_scratch.py
 
 - **`synthesize_all.py`** → Generates structured synthetic text in Swahili, English, and Kiswaenglish, imported automatically
 - **`build_full_dataset.py`** → Combines synthetic data and Swahili Corpus into one balanced dataset following the 30|70 rule
 - **`build_tokenizer.py`** → Trains custom tokenizer to handle mixed language patterns correctly
 - **`model_config.json`** → Stores all model and training settings in one place
-- **`train_scratch.py`** → Defines the model architecture and runs the full training loop for macOS
-- **`swahili_gpt_torch.py`** → Loads the trained model and produces text responses for macOS
-- **`train_scratch_torch.py` , `swahili_gpt_torch.py`** → PyTorch versions for Windows and Linux, to be contributed by the community
 
 
 # How to Contribute
